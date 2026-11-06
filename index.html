@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#05050b">
+  <meta name="description" content="Sinapsis Orgánica — El origen. Una pieza de materia viva, iluminada desde dentro.">
+  <title>Sinapsis Orgánica — El origen</title>
+</head>
+<body>
+  <main id="origin" aria-label="El origen, materia viva interactiva">
+    <div id="scene" aria-hidden="true"></div>
+    <div id="fallback" aria-hidden="true">
+      <svg viewBox="0 0 800 650" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="pearl"><stop stop-color="#ffe4b9" stop-opacity=".9"/><stop offset=".3" stop-color="#d4b4c7" stop-opacity=".45"/><stop offset=".75" stop-color="#8976ba" stop-opacity=".26"/><stop offset="1" stop-color="#d8c3df" stop-opacity=".58"/></radialGradient>
+          <radialGradient id="heart"><stop stop-color="#fff8df"/><stop offset=".22" stop-color="#f5d7ad" stop-opacity=".8"/><stop offset="1" stop-color="#e8bcb1" stop-opacity="0"/></radialGradient>
+        </defs>
+        <path d="M150 250C172 150 280 152 360 100C450 28 548 56 560 166C579 238 677 251 650 346C627 399 560 417 541 505C490 607 381 532 312 559C200 590 206 494 135 453C64 408 118 335 150 250Z" fill="url(#pearl)" stroke="#d3bfd8" stroke-opacity=".45"/>
+        <path d="M150 250C252 216 320 278 360 100C445 150 353 310 541 505C380 404 379 559 312 559C353 406 176 425 150 250Z" fill="url(#pearl)" stroke="#d3bfd8" stroke-opacity=".27"/>
+        <path d="M560 166C400 202 535 300 650 346C485 336 424 442 206 494C314 395 239 308 360 282C438 270 491 170 560 166Z" fill="url(#pearl)"/>
+        <ellipse cx="390" cy="315" rx="126" ry="137" fill="url(#heart)"/>
+      </svg>
+    </div>
+    <button id="begin" class="begin-bubble" type="button"><span>Comenzar</span></button>
+    <span id="status" class="sr-only" role="status" aria-live="polite"></span>
+    <button id="motion-toggle" class="sr-only focus-control" type="button">Pausar movimiento</button>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

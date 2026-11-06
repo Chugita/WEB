@@ -1,39 +1,57 @@
-# Sinapsis Orgánica
+# Living Matter — Sinapsis Orgánica
 
-Apertura real de planificación financiera, limitada al botón **Comenzar**. Referencia visual: B.1 Neuronal, filamentos violetas y durazno, núcleo luminoso, profundidad y tipografía serif.
+Phase 01 only. A full-viewport procedural 3D living mass, internal pearlescent light, localized elastic pointer interaction, temporary electromagnetic trails and one semantic **Comenzar** bubble. The supplied reference is a visual target, not a background texture. No explosion, headline, external network, questionnaire or second scene.
 
-## Ejecutar
+## Run and build
 
-Requiere Node.js 24. No hay dependencias de ejecución.
+Requires Node.js 24.
 
 ```sh
+npm ci
 npm run dev
+npm test
+npm run build
 ```
 
-Abrir http://127.0.0.1:4173. `npm test` verifica archivos, sintaxis, comportamiento de la apertura y respuestas del endpoint de salud con red simulada.
+Vite serves the app at the printed local address. Vercel uses `npm run build` and output `dist`. The existing `/api/health` function is preserved; Supabase is not configured because the account's two free project slots are already occupied. The scene has no database dependency.
 
-## Publicar en Vercel
+## Architecture
 
-Importar `Chugita/WEB`, preset **Other**, directorio raíz del repositorio. `vercel.json` define `npm run build` y salida `public`. El recurso visual está incluido, sin peticiones a servicios de imágenes.
+TypeScript + Vite + Three.js with custom GLSL. Direct Three.js keeps the existing lightweight entry point and one animation loop without adding a React runtime solely for the canvas. Geist Sans is bundled locally.
 
-## Supabase
+- `src/OriginScene.ts`: camera, rendering, pointer capture, barycentric raycast mapping, lifecycle, responsive layout, bloom, adaptive quality.
+- `src/LivingMatter.ts`: shared deformed geometry, ordered back membrane / light / inner folds / front membrane; CPU-updated smooth normals.
+- `src/physics.ts`: coherent warped noise, localized Gaussian pressure, stable damped spring and release wave.
+- `src/ElectromagneticTrail.ts`: four reused dynamic line buffers, Catmull–Rom interpolation, velocity response and shader alpha decay.
+- `src/shaders/`: custom membrane, core and trail vertex/fragment shaders.
+- `src/config/originVisualConfig.ts`: editable visual and physical parameters.
+- `src/styles/origin.css`: composition, semantic organic bubble, focus and fallback.
 
-La apertura funciona sin base de datos. La integración opcional se configura con `SUPABASE_URL` en Vercel. `GET /api/health` comprueba la conexión al endpoint público JWKS de Supabase sin claves privilegiadas, usuarios ni tablas. Sin configuración devuelve `supabase: not_configured`; con conexión válida, `reachable`; con error, HTTP 503 y `unavailable`. Esta comprobación no prueba consultas de base de datos ni almacenamiento.
+Raycasting uses the actual current CPU-deformed outer mesh. Barycentric coordinates map the hit back to the corresponding original surface directions. It does not use a screen-center proximity heuristic or a spherical proxy. Pressure remains local and bounded; dragging never rotates the object as a trackball.
 
-El proyecto separado solicitado en GAX Finance no pudo crearse por el límite de dos proyectos gratuitos activos. No se modificaron los proyectos existentes y no se reutilizó su base de datos. No hay integración activa hasta seleccionar/provisionar un proyecto.
+## Integration contract
 
-## Alcance y accesibilidad
+```ts
+const scene = mountOriginScene(root, {
+  onBegin: () => { /* existing next-phase transition can be connected here */ },
+  quality: 'auto' // 'high' | 'medium' | 'low'
+});
+// On removal:
+scene.dispose();
+```
 
-Intro de 4,8 segundos: expansión, disolución, núcleo guía, frase y botón. Omitir, repetir y pausar. Movimiento reducido muestra el estado final sin animación. Animación suspendida en pestañas ocultas, limitada a 30 fps y pixel ratio 1,5. Campo neuronal rasterizado con luces y partículas Canvas. No es una simulación 3D.
+Every activation also preserves the existing `sinapsis:begin` document event. No navigation or placeholder second scene is added. Enter, Space and touch use the real HTML button.
 
-El núcleo del fondo se oculta con una máscara suave y se sustituye por una partícula Canvas independiente: membrana luminosa, deriva acotada en dos ejes, respiración e hilos que siguen su posición. La explosión usa compresión inicial, liberación cálida/violeta, filamentos en varios planos, ramificaciones y trazas que se disipan antes de aparecer la guía. La partícula sigue animándose después de la intro; pausar o el movimiento reducido la dejan quieta. No se implementa la fase 2.
+`forceFallback` and `reducedMotion` are optional mounting overrides for validation. Development-only `?fallback=1` and `?reduced=1` routes exercise those paths; production ignores these query overrides. Development diagnostics are DOM data attributes and do not collect or transmit visitor information.
 
-Comenzar emite `sinapsis:begin` sobre `document`; no navega a otra pantalla. No hay preguntas, cuentas, formularios, cookies analíticas ni recolección de información financiera.
+## Performance and accessibility
 
-Prompt y procedencia del fondo en `ASSET-PROMPT.md`.
+One RAF loop, bounded frame delta, shared geometry, reused GPU buffers and disposed resources. Mesh updates at 30 Hz idle / 45 Hz during dragging; rendering targets the display refresh rate. Auto quality caps DPR, chooses geometry density and reduces DPR/bloom if sustained frame intervals are high. These are targets, not a hardware performance guarantee.
 
-## Validación realizada
+Reduced motion freezes the ambient time and removes pressure/trail effects while preserving the material and CTA. A keyboard-focus-only pause control is available after Comenzar; ordinary viewing contains only the one CTA. The animation suspends in hidden tabs. Context loss displays the static SVG approximation with the functional button. The fallback stays visible during first-frame compilation to avoid an empty viewport.
 
-Pruebas de lógica aprobadas: secuencia, mensaje, estado final, Comenzar sin navegación, repetir, omitir y foco, pausar/reanudar, pestaña oculta y movimiento reducido. Endpoint local `/api/health` comprobado: `supabase: not_configured`.
+## Known fidelity and validation limits
 
-Composición montada inspeccionada en navegador de escritorio (1280 × 720) y viewport estrecho observado (476 × 668), sin desbordamiento horizontal. Omitir, repetir y Comenzar comprobados en navegador; sin errores de consola observados. La solicitud de emulación a 390 × 844 no cambió el viewport efectivo de la pestaña probada; no se reporta como verificada. Dispositivos físicos, Safari y preferencia de movimiento reducido del sistema no comprobados.
+Translucency, thickness and scattering are artistic approximations with ordered alpha layers and restrained bloom, not spectral transport or fluid simulation. The core uses a procedural luminous internal plane; surrounding deformed membranes provide the occlusion and volume impression. The silhouette and folds differ from the generated still and are not claimed pixel-perfect. Native GL line thickness varies by device.
+
+CPU deformation tests cover coherence, bounds, locality, stable release and reduced-motion sampling. Browser review includes desktop and 390 × 844 simulated mobile composition, actual surface-hit detection, keyboard activation and forced fallback. Physical phones, Safari, hardware context loss and GPU profiling need separate validation. The reference still does not establish 60 FPS performance.
