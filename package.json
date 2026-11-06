@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.cjs",
     "build": "node scripts/check.cjs",
-    "test": "node scripts/check.cjs"
+    "test": "node scripts/check.cjs && node scripts/opening.test.cjs && node scripts/health.test.cjs"
   },
   "engines": { "node": "24.x" }
 }

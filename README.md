@@ -10,7 +10,7 @@ Requiere Node.js 24. No hay dependencias de ejecución.
 npm run dev
 ```
 
-Abrir http://127.0.0.1:4173. Para verificar archivos, sintaxis y controles: `npm test`. Para las pruebas de comportamiento: `node scripts/opening.test.cjs`.
+Abrir http://127.0.0.1:4173. `npm test` verifica archivos, sintaxis, comportamiento de la apertura y respuestas del endpoint de salud con red simulada.
 
 ## Publicar en Vercel
 
@@ -29,3 +29,9 @@ Intro de 4,8 segundos: expansión, disolución, núcleo guía, frase y botón. O
 Comenzar emite `sinapsis:begin` sobre `document`; no navega a otra pantalla. No hay preguntas, cuentas, formularios, cookies analíticas ni recolección de información financiera.
 
 Prompt y procedencia del fondo en `ASSET-PROMPT.md`.
+
+## Validación realizada
+
+Pruebas de lógica aprobadas: secuencia, mensaje, estado final, Comenzar sin navegación, repetir, omitir y foco, pausar/reanudar, pestaña oculta y movimiento reducido. Endpoint local `/api/health` comprobado: `supabase: not_configured`.
+
+Composición montada inspeccionada en navegador de escritorio (1280 × 720) y viewport estrecho observado (476 × 668), sin desbordamiento horizontal. Omitir, repetir y Comenzar comprobados en navegador; sin errores de consola observados. La solicitud de emulación a 390 × 844 no cambió el viewport efectivo de la pestaña probada; no se reporta como verificada. Dispositivos físicos, Safari y preferencia de movimiento reducido del sistema no comprobados.
