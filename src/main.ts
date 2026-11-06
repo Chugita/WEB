@@ -4,3 +4,4 @@ const root=document.querySelector<HTMLElement>('#origin')!;
 const qa=import.meta.env.DEV?new URLSearchParams(location.search):null;
 const scene=mountOriginScene(root,{quality:'auto',forceFallback:qa?.has('fallback'),reducedMotion:qa?.has('reduced')?true:undefined});
 if(import.meta.hot)import.meta.hot.dispose(()=>scene.dispose());
+if(import.meta.env.DEV)void import('./devCapture');

@@ -55,3 +55,9 @@ Reduced motion freezes the ambient time and removes pressure/trail effects while
 Translucency, thickness and scattering are artistic approximations with ordered alpha layers and restrained bloom, not spectral transport or fluid simulation. The core uses a procedural luminous internal plane; surrounding deformed membranes provide the occlusion and volume impression. The silhouette and folds differ from the generated still and are not claimed pixel-perfect. Native GL line thickness varies by device.
 
 CPU deformation tests cover coherence, bounds, locality, stable release and reduced-motion sampling. Browser review includes desktop and 390 × 844 simulated mobile composition, actual surface-hit detection, keyboard activation and forced fallback. Physical phones, Safari, hardware context loss and GPU profiling need separate validation. The reference still does not establish 60 FPS performance.
+
+## Review exports (development only)
+
+Alt+Shift+S exports the current composed view as a PNG. Alt+Shift+I, D and T record five-second WebM clips for idle motion, deformation and trails; interact with the canvas while D/T recording is active. Clips contain the WebGL scene, not the separate HTML CTA. Captures are browser-render exports through html2canvas; video is recorded from the actual canvas stream, without animation simulation or generated footage.
+
+Local exports default to `.review/`; `ORIGIN_CAPTURE_DIR` may select an output folder. Export routes require same-origin localhost requests and fixed filenames, have bounded request sizes, and are registered only in the Vite development server. The capture module is removed from the production bundle. There are no capture controls or recording behavior on the deployed page.
