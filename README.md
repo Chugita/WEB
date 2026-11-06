@@ -26,6 +26,8 @@ El proyecto separado solicitado en GAX Finance no pudo crearse por el límite de
 
 Intro de 4,8 segundos: expansión, disolución, núcleo guía, frase y botón. Omitir, repetir y pausar. Movimiento reducido muestra el estado final sin animación. Animación suspendida en pestañas ocultas, limitada a 30 fps y pixel ratio 1,5. Campo neuronal rasterizado con luces y partículas Canvas. No es una simulación 3D.
 
+El núcleo del fondo se oculta con una máscara suave y se sustituye por una partícula Canvas independiente: membrana luminosa, deriva acotada en dos ejes, respiración e hilos que siguen su posición. La explosión usa compresión inicial, liberación cálida/violeta, filamentos en varios planos, ramificaciones y trazas que se disipan antes de aparecer la guía. La partícula sigue animándose después de la intro; pausar o el movimiento reducido la dejan quieta. No se implementa la fase 2.
+
 Comenzar emite `sinapsis:begin` sobre `document`; no navega a otra pantalla. No hay preguntas, cuentas, formularios, cookies analíticas ni recolección de información financiera.
 
 Prompt y procedencia del fondo en `ASSET-PROMPT.md`.
