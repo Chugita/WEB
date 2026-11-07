@@ -28,7 +28,7 @@ export class ElectromagneticTrail{
   const idx=[];for(let i=0;i<n-1;i++){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}g.setIndex(idx);
   const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:false,side:THREE.DoubleSide,uniforms:{uIntensity:{value:0}},
    vertexShader:'attribute float aFade;varying vec2 vUv;varying float vFade;void main(){vUv=uv;vFade=aFade;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-   fragmentShader:'varying vec2 vUv;varying float vFade;uniform float uIntensity;void main(){float edge=pow(max(0.,1.-abs(vUv.y*2.-1.)),1.7);float membrane=.55+.45*sin(vUv.x*23.+vUv.y*6.);vec3 color=mix(vec3(.62,.48,.8),vec3(.96,.77,.6),vUv.y);float alpha=edge*vFade*(.18+uIntensity*.24)*membrane;gl_FragColor=vec4(color,alpha);}'
+   fragmentShader:'varying vec2 vUv;varying float vFade;uniform float uIntensity;void main(){float edge=pow(max(0.,1.-abs(vUv.y*2.-1.)),.8);float membrane=.7+.3*sin(vUv.x*23.+vUv.y*6.);vec3 color=mix(vec3(.62,.48,.8),vec3(.96,.77,.6),vUv.y);float alpha=edge*vFade*(.3+uIntensity*.32)*membrane;gl_FragColor=vec4(color,alpha);}'
   });const mesh=new THREE.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=10;mesh.visible=false;this.group.add(mesh);this.strips.push(mesh);
  }}
  add(p:THREE.Vector3,t:number){
@@ -37,7 +37,7 @@ export class ElectromagneticTrail{
   if(last&&t-this.lastFragment>.045){
    const dx=p.x-last.p.x,dy=p.y-last.p.y,len=Math.hypot(dx,dy)||1;
    const f=this.fragments[this.fragmentIndex++%this.fragments.length],side=this.fragmentIndex%2?1:-1;
-   f.origin.copy(last.p);f.birth=t;f.radius=.035+this.intensity*.035+(this.fragmentIndex%3)*.008;
+   f.origin.copy(last.p);f.birth=t;f.radius=.055+this.intensity*.045+(this.fragmentIndex%3)*.012;
    f.vx=-dy/len*side*.14-dx/len*.09;f.vy=dx/len*side*.14-dy/len*.09;
    f.mesh.rotation.set(this.fragmentIndex*.7,this.fragmentIndex*.4,0);this.lastFragment=t;
   }
@@ -55,7 +55,7 @@ export class ElectromagneticTrail{
    for(let i=0;i<this.count;i++){
     const u=i/(this.count-1);this.curve.getPoint(u,this.p);this.curve.getTangent(u,this.tangent);
     const age=Math.max(0,1-(time-(first+(last-first)*u))/life);
-    const width=(.075+this.intensity*.065)*(layer===0?1:.38)*Math.pow(age,.6)*Math.pow(Math.sin(Math.PI*u),.4)*(1.+Math.sin(u*19.+layer)*.2);
+    const width=(.14+this.intensity*.10)*(layer===0?1:.38)*Math.pow(age,.6)*Math.pow(Math.sin(Math.PI*u),.4)*(1.+Math.sin(u*19.+layer)*.2);
     const offset=layer===0?0:Math.sin(u*9.+layer*2.)*.09*(.3+this.intensity)*Math.sin(u*Math.PI);
     const len=Math.hypot(this.tangent.x,this.tangent.y)||1,nx=-this.tangent.y/len,ny=this.tangent.x/len;
     for(let side=0;side<2;side++){const v=i*2+side,w=(side*2-1)*width+offset;pos.setXYZ(v,this.p.x+nx*w,this.p.y+ny*w,this.p.z+layer*.001);uv.setXY(v,u,side);fade.setX(v,age*age*(layer===0?1:this.intensity*.5));}
@@ -65,3 +65,4 @@ export class ElectromagneticTrail{
  clear(){this.samples.length=0;for(const f of this.fragments){f.birth=-10;f.mesh.visible=false;}this.strips.forEach(s=>s.visible=false);}
  dispose(){this.fragmentGeometry.dispose();this.fragmentMaterial.dispose();for(const s of this.strips){s.geometry.dispose();(s.material as THREE.Material).dispose();}this.samples.length=0;}
 }
+
