@@ -22,6 +22,10 @@ export function deform(x:number,y:number,z:number,time:number,contact:Contact,mo
   const distance=Math.hypot(x-contact.x,y-contact.y,z-contact.z);
   const push=-contact.strength*pressureFalloff(distance,.3)+contact.strength*.004;
   const r=clamp(1+fixed+flow+detail+push,.7,1.35);
-  out[0]=x*r*1.06;out[1]=y*r*.98;out[2]=z*r*.91;return out;
+  const bump=(a:number,b:number,c:number,k:number)=>{const n=Math.hypot(a,b,c);return Math.exp(-((x-a/n)**2+(y-b/n)**2+(z-c/n)**2)*k);};
+const upper=bump(.35,.85,.25,5),left=bump(-.9,.1,.2,6),lower=bump(.5,-.8,.1,7);
+out[0]=x*r*1.04+.13*upper-.12*left+.10*lower-.14*bump(-.5,-.8,.3,4)+.21*bump(.9,.05,.4,9)+.11*y*y-.08*z;
+out[1]=y*r*.98+.18*upper-.05*left-.14*lower-.16*bump(-.5,-.8,.3,4)+.04*bump(.9,.05,.4,9)+.045*Math.sin(x*3+t*.6)*(1-y*y);
+out[2]=z*r*.85-.08*upper+.12*left+.03*lower+.07*bump(-.5,-.8,.3,4)+.03*bump(.9,.05,.4,9);return out;
 }
 

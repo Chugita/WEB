@@ -21,7 +21,17 @@ vec3 body(vec3 d){
     rebound+=sin(r*13.-age*10.)*exp(-age*4.-r*2.)*uImpulses[i].w*.1*min(age*5.,1.);
   }
   float r=clamp(1.+(fixedField+circulation+secondary+asym)*(1.-uMorph*.94)+(contact+rebound)*(1.-uMorph),.7,1.35);
-  return d*r*mix(vec3(1.06,.98,.91),vec3(1.),uMorph);
+  vec3 q=d*r*vec3(1.04,.98,.85);
+float upper=exp(-dot(d-normalize(vec3(.35,.85,.25)),d-normalize(vec3(.35,.85,.25)))*5.);
+float left=exp(-dot(d-normalize(vec3(-.9,.1,.2)),d-normalize(vec3(-.9,.1,.2)))*6.);
+float lower=exp(-dot(d-normalize(vec3(.5,-.8,.1)),d-normalize(vec3(.5,-.8,.1)))*7.);
+q+=vec3(.13,.18,-.08)*upper+vec3(-.12,-.05,.12)*left+vec3(.10,-.14,.03)*lower;
+float sag=exp(-dot(d-normalize(vec3(-.5,-.8,.3)),d-normalize(vec3(-.5,-.8,.3)))*4.);
+q+=vec3(-.14,-.16,.07)*sag;
+float shoulder=exp(-dot(d-normalize(vec3(.9,.05,.4)),d-normalize(vec3(.9,.05,.4)))*9.);
+q+=vec3(.21,.04,.03)*shoulder;
+q.x+=.11*d.y*d.y-.08*d.z;q.y+=.045*sin(d.x*3.+t*.6)*(1.-d.y*d.y);
+return mix(q,d*(1.+fixedField*.04),uMorph);
 }
 void main(){
   vec3 d=normalize(position);

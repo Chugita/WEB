@@ -1,6 +1,6 @@
-# Sinapsis Orgánica · V5
+# Sinapsis Orgánica · V6 · revisión visual
 
-Una única masa procedural cerrada sobre negro; movimiento orgánico, presión local elástica, estela efímera y navegación reversible por scroll. Sin botón Comenzar. El recorrido termina en la primera pregunta aprobada y tres ramas; la elección ilumina un camino y conduce a un nodo inactivo, sin preguntas posteriores.
+Silueta asimétrica con regiones tensionadas, integración volumétrica de 40 pasos, núcleo cálido parcialmente ocluido y estela de superficies trianguladas con ancho real. Una única masa procedural cerrada sobre negro; movimiento orgánico, presión local elástica, estela efímera y navegación reversible por scroll. Sin botón Comenzar. El recorrido termina en la primera pregunta aprobada y tres ramas; la elección ilumina un camino y conduce a un nodo inactivo, sin preguntas posteriores.
 
 ## Ejecutar
 
@@ -25,3 +25,7 @@ La imagen aprobada es referencia de dirección; este material procedural todaví
 La alternativa sin WebGL mantiene pregunta y respuestas accesibles, con un SVG simplificado; no reproduce la deformación, estela ni red 3D. La colisión CPU es aproximada. El recorrido posterior queda fuera de alcance. Supabase sigue sin configurarse por el límite de proyectos gratuitos; esta experiencia no necesita base de datos.
 
 En desarrollo, Alt+Shift+S exporta captura; Alt+Shift+I/D/T graba cinco segundos del canvas. No se incluyen estas herramientas en producción. Los videos del canvas no incluyen el texto HTML.
+
+## Estado V6
+
+Implementada y probada como iteración de revisión, no declarada réplica exacta de la referencia. Persisten diferencias en la fineza de los pliegues, la distribución de luz y la forma. La integración de volumen es una aproximación procedural; no una simulación física de transmisión. No se copió el HTML recibido: se inspeccionó como material adicional.

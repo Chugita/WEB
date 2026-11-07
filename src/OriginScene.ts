@@ -43,7 +43,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     };frame=requestAnimationFrame(draw);
     return{quality:'fallback' as const,dispose(){disposed=true;cancelAnimationFrame(frame);ui.dispose();abort.abort();}};
   }
-  renderer.setClearColor(0x000000,1);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  renderer.setClearColor(new THREE.Color(0x05050b).multiplyScalar(.16),1);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   const quality=chooseQuality(options.quality??'auto',innerWidth,navigator.hardwareConcurrency),preset=visual.quality[quality];
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,preset.dpr));host.append(renderer.domElement);
   const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-5,5,3.8,-3.8,.1,35);camera.position.set(0,0,9);

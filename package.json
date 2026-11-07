@@ -1,6 +1,6 @@
 {
   "name": "sinapsis-organica",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "private": true,
   "description": "Apertura cinematográfica de Sinapsis Orgánica",
   "scripts": {
@@ -9,7 +9,17 @@
     "build": "tsc --noEmit && vite build",
     "test": "node --test tests/*.test.mjs && node scripts/health.test.cjs"
   },
-  "engines": { "node": "24.x" },
-  "dependencies": { "three": "0.187.0", "@fontsource-variable/geist": "5.3.0" },
-  "devDependencies": { "vite": "8.3.6", "typescript": "7.0.2", "@types/three": "0.187.0", "html2canvas": "1.4.1" }
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "three": "0.187.0",
+    "@fontsource-variable/geist": "5.3.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.6",
+    "typescript": "7.0.2",
+    "@types/three": "0.187.0",
+    "html2canvas": "1.4.1"
+  }
 }
