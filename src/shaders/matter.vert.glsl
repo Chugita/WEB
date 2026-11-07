@@ -7,12 +7,14 @@ varying float vDensity;
 float cell(vec3 p){return fract(sin(dot(p,vec3(19.19,71.17,113.13)))*17453.671)*2.-1.;}
 float fieldNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(cell(i),cell(i+vec3(1,0,0)),f.x),mix(cell(i+vec3(0,1,0)),cell(i+vec3(1,1,0)),f.x),f.y),mix(mix(cell(i+vec3(0,0,1)),cell(i+vec3(1,0,1)),f.x),mix(cell(i+vec3(0,1,1)),cell(i+vec3(1,1,1)),f.x),f.y),f.z);}
 vec3 body(vec3 d){
-  float t=uTime*.22,warp=fieldNoise(d*.8+vec3(2.,-1.,.4));
-  float fixedField=fieldNoise(d*1.12+warp*.27+vec3(1.8,.7,-2.1))*.15;
-  float circulation=fieldNoise(d*.92+vec3(t*.24,-t*.17+4.,t*.2))*.085;
-  float secondary=fieldNoise(d*3.1+warp*.2+vec3(0,t*.12,1.))*.033;
-  float asym=.065*exp(-dot(d-normalize(vec3(.7,.6,.2)),d-normalize(vec3(.7,.6,.2)))*4.);
-  asym-=.045*exp(-dot(d-normalize(vec3(-.5,.3,.8)),d-normalize(vec3(-.5,.3,.8)))*5.);
+  float t=uTime;
+  // Reference: short travelling corrugations over a round, continuously deforming body.
+  vec3 flow=vec3(t*.21,-t*.17,t*.13);
+  float large=fieldNoise(d*2.8+flow+vec3(1.8,.7,-2.1))*.14;
+  float crests=sin(d.x*10.+t*.92+sin(d.z*4.-t*.3))
+              *sin(d.y*9.-t*.74+cos(d.x*3.+t*.21))*.075;
+  float detail=fieldNoise(d*5.2-flow*.6)*.035;
+  float rest=fieldNoise(d*1.1+vec3(1.8,.7,-2.1))*.025;
   float dist=distance(d,uContact);
   float contact=-uPressure*exp(-dist*dist/.18)+uPressure*.004;
   float rebound=0.;
@@ -20,30 +22,10 @@ vec3 body(vec3 d){
     float age=uImpulseAges[i],r=distance(d,uImpulses[i].xyz);
     rebound+=sin(r*13.-age*10.)*exp(-age*4.-r*2.)*uImpulses[i].w*.1*min(age*5.,1.);
   }
-  float r=clamp(1.+(fixedField+circulation+secondary+asym)*(1.-uMorph*.94)+(contact+rebound)*(1.-uMorph),.7,1.35);
-  vec3 q=d*r*vec3(1.04,.98,.85);
-float upper=exp(-dot(d-normalize(vec3(.35,.85,.25)),d-normalize(vec3(.35,.85,.25)))*5.);
-float left=exp(-dot(d-normalize(vec3(-.9,.1,.2)),d-normalize(vec3(-.9,.1,.2)))*6.);
-float lower=exp(-dot(d-normalize(vec3(.5,-.8,.1)),d-normalize(vec3(.5,-.8,.1)))*7.);
-q+=vec3(.13,.18,-.08)*upper+vec3(-.12,-.05,.12)*left+vec3(.10,-.14,.03)*lower;
-float sag=exp(-dot(d-normalize(vec3(-.5,-.8,.3)),d-normalize(vec3(-.5,-.8,.3)))*4.);
-q+=vec3(-.14,-.16,.07)*sag;
-float shoulder=exp(-dot(d-normalize(vec3(.9,.05,.4)),d-normalize(vec3(.9,.05,.4)))*9.);
-q+=vec3(.21,.04,.03)*shoulder;
-q.x+=.11*d.y*d.y-.08*d.z;q.y+=.045*sin(d.x*3.+t*.6)*(1.-d.y*d.y);
-q=mix(q,d*r, .28);
-// Six broad tips travel out of phase, producing waves without rigid rotation.
-float lobes=0.;
-for(int i=0;i<6;i++){
- float phase=float(i)*1.04719755;
- float angle=phase+.10*sin(uTime*.28+phase*1.7);
- vec3 axis=normalize(vec3(cos(angle),sin(angle),.16*sin(phase*2.)));
- float wave=.075+.07*sin(uTime*.58-phase*1.4);
- lobes+=exp(-dot(d-axis,d-axis)*16.)*wave;
+  float radial=1.+(large+crests+detail+rest)*(1.-uMorph*.98)+(contact+rebound)*(1.-uMorph);
+  return d*clamp(radial,.7,1.35)*mix(vec3(1.02,1.,.97),vec3(1.),uMorph);
 }
-q+=d*lobes;
-return mix(q,d*(1.+fixedField*.04),uMorph);
-}
+
 void main(){
   vec3 d=normalize(position);
   vec3 axis=abs(d.z)<.9?vec3(0,0,1):vec3(0,1,0);
@@ -55,4 +37,5 @@ void main(){
   vDensity=fieldNoise(d*2.2+vec3(.6,uTime*.015,2.1))*.5+.5;
   gl_Position=projectionMatrix*viewMatrix*world;
 }
+
 
