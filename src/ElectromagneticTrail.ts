@@ -11,6 +11,8 @@ export class ElectromagneticTrail {
   private tmp=new THREE.Vector3();
   private speed=0;
   private acceleration=0;
+  private intensity=0;
+  setIntensity(value:number){this.intensity=value;}
   emitted=0;
   get pointCount(){return this.samples.length;}
   constructor(){
@@ -33,7 +35,8 @@ export class ElectromagneticTrail {
     this.samples.push({p:p.clone(),t:time});this.emitted++;if(this.samples.length>40)this.samples.shift();
   }
   update(time:number,reduced:boolean){
-    while(this.samples.length&&time-this.samples[0].t>visual.trailLifetime)this.samples.shift();
+    const lifetime=.46+this.intensity*.46;
+    while(this.samples.length&&time-this.samples[0].t>lifetime)this.samples.shift();
     const active=this.samples.length>1&&!reduced;
     for(const l of this.lines)l.visible=active;
     if(!active)return;
@@ -48,8 +51,8 @@ export class ElectromagneticTrail {
       }
       position.needsUpdate=true;birth.needsUpdate=true;
       const uniforms=(line.material as THREE.ShaderMaterial).uniforms;
-      uniforms.uTime.value=time;uniforms.uLifetime.value=visual.trailLifetime*(.6+this.speed*.5);
-      uniforms.uOpacity.value=(layer===0?visual.trailGlow*1.6:visual.trailGlow*.36)*(.6+this.speed*.4);
+      uniforms.uTime.value=time;uniforms.uLifetime.value=lifetime;
+      uniforms.uOpacity.value=(layer===0?visual.trailGlow*(1+this.intensity):visual.trailGlow*.27*this.intensity)*(.65+this.speed*.35);
     }
   }
   clear(){this.samples.length=0;for(const l of this.lines)l.visible=false;}

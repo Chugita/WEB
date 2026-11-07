@@ -1,10 +1,11 @@
 {
   "name": "sinapsis-organica",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "private": true,
   "description": "Apertura cinematográfica de Sinapsis Orgánica",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 4173",
+    "preview": "vite preview --host 127.0.0.1 --port 4181",
     "build": "tsc --noEmit && vite build",
     "test": "node --test tests/*.test.mjs && node scripts/health.test.cjs"
   },

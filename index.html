@@ -1,30 +1,27 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#05050b">
-  <meta name="description" content="Sinapsis Orgánica — El origen. Una pieza de materia viva, iluminada desde dentro.">
-  <title>Sinapsis Orgánica — El origen</title>
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#05050b"><meta name="description" content="Sinapsis Orgánica. Una exploración de tus decisiones y lo que querés construir."><title>Sinapsis Orgánica</title></head>
 <body>
-  <main id="origin" aria-label="El origen, materia viva interactiva">
-    <div id="scene" aria-hidden="true"></div>
-    <div id="fallback" aria-hidden="true">
-      <svg viewBox="0 0 800 650" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="pearl"><stop stop-color="#ffe4b9" stop-opacity=".9"/><stop offset=".3" stop-color="#d4b4c7" stop-opacity=".45"/><stop offset=".75" stop-color="#8976ba" stop-opacity=".26"/><stop offset="1" stop-color="#d8c3df" stop-opacity=".58"/></radialGradient>
-          <radialGradient id="heart"><stop stop-color="#fff8df"/><stop offset=".22" stop-color="#f5d7ad" stop-opacity=".8"/><stop offset="1" stop-color="#e8bcb1" stop-opacity="0"/></radialGradient>
-        </defs>
-        <path d="M150 250C172 150 280 152 360 100C450 28 548 56 560 166C579 238 677 251 650 346C627 399 560 417 541 505C490 607 381 532 312 559C200 590 206 494 135 453C64 408 118 335 150 250Z" fill="url(#pearl)" stroke="#d3bfd8" stroke-opacity=".45"/>
-        <path d="M150 250C252 216 320 278 360 100C445 150 353 310 541 505C380 404 379 559 312 559C353 406 176 425 150 250Z" fill="url(#pearl)" stroke="#d3bfd8" stroke-opacity=".27"/>
-        <path d="M560 166C400 202 535 300 650 346C485 336 424 442 206 494C314 395 239 308 360 282C438 270 491 170 560 166Z" fill="url(#pearl)"/>
-        <ellipse cx="390" cy="315" rx="126" ry="137" fill="url(#heart)"/>
-      </svg>
+  <main id="experience">
+    <div id="origin" aria-label="Sinapsis Orgánica, recorrido interactivo">
+      <div id="scene" aria-hidden="true"></div>
+      <div id="fallback" aria-hidden="true"><svg viewBox="0 0 600 600"><defs><radialGradient id="dense"><stop stop-color="#f7dfbd"/><stop offset=".3" stop-color="#c6aebd"/><stop offset=".68" stop-color="#9989b3"/><stop offset="1" stop-color="#4e435f"/></radialGradient></defs><path d="M118 190C149 106 244 93 302 110C377 55 442 126 450 191C531 239 486 332 470 371C460 473 372 498 307 463C221 505 155 438 145 385C61 342 69 240 118 190Z" fill="url(#dense)"/></svg></div>
+      <div id="matter-touch-zone" aria-hidden="true"></div>
+      <p id="scroll-hint">Deslizá para descubrir<span aria-hidden="true"></span></p>
+      <button id="advance" class="sr-only focus-control" type="button">Avanzar a la primera pregunta</button>
+      <button id="motion-toggle" class="sr-only focus-control" type="button">Pausar movimiento</button>
+      <section id="junction" aria-labelledby="question" hidden>
+        <h1 id="question" tabindex="-1">Si pensaras en los próximos años, ¿qué te gustaría conseguir?</h1>
+        <div role="group" aria-labelledby="question">
+          <button class="answer-orb" data-answer="project" aria-pressed="false" type="button">Concretar un proyecto</button>
+          <button class="answer-orb" data-answer="stability" aria-pressed="false" type="button">Tener mayor estabilidad</button>
+          <button class="answer-orb" data-answer="independence" aria-pressed="false" type="button">Tener más independencia</button>
+        </div>
+        <button id="return" class="sr-only focus-control" type="button">Volver al origen</button>
+      </section>
+      <span id="status" class="sr-only" role="status" aria-live="polite"></span>
     </div>
-    <button id="begin" class="begin-bubble" type="button"><span>Comenzar</span></button>
-    <span id="status" class="sr-only" role="status" aria-live="polite"></span>
-    <button id="motion-toggle" class="sr-only focus-control" type="button">Pausar movimiento</button>
+    <div id="scroll-space" aria-hidden="true"></div>
   </main>
   <script type="module" src="/src/main.ts"></script>
 </body>

@@ -1,45 +1,15 @@
-export type Quality = 'auto' | 'high' | 'medium' | 'low';
-export const visual = {
-  background: '#05050b',
-  massScale: 2.45,
-  massPositionY: .55,
-  largeNoiseFrequency: 1.05,
-  largeNoiseAmplitude: .28,
-  foldFrequency: 2.45,
-  foldAmplitude: .14,
-  microNoiseStrength: .013,
-  membraneOpacity: .22,
-  edgeFresnelStrength: .88,
-  warmLightIntensity: 1.15,
-  coolReflectionIntensity: .7,
-  coreBrightness: 1.8,
-  coreRadius: .67,
-  bloomIntensity: .26,
-  idleMotionSpeed: .15,
-  idleMotionAmplitude: .07,
-  hoverInfluence: .035,
-  dragInfluence: .19,
-  elasticStiffness: 65,
-  elasticDamping: 13,
-  pressureRadius: .28,
-  trailLifetime: .82,
-  trailWidth: .65,
-  trailGlow: .28,
-  bubbleScale: 1,
-  quality: {
-    high: { segments: 112, rings: 80, dpr: 1.65, bloom: true },
-    medium: { segments: 80, rings: 56, dpr: 1.35, bloom: true },
-    low: { segments: 56, rings: 40, dpr: 1, bloom: false }
-  }
+export type Quality='auto'|'high'|'medium'|'low';
+export const palette={background:'#05050b',lavender:'#BDAFD4',lilac:'#C8B5DF',mauve:'#5C4E73',champagne:'#F0D5BF',pearl:'#ECE5E5',ice:'#AFC9E8',core:'#FFF4E7'};
+export const visual={
+  massScale:2.15,massPositionY:.2,viewHeight:7.6,
+  shapeFrequency:1.12,shapeAmplitude:.15,motionAmplitude:.085,secondaryAmplitude:.033,
+  idleMotionSpeed:.22,hoverInfluence:.025,dragInfluence:.17,pressureRadius:.3,
+  elasticStiffness:64,elasticDamping:13,bloomIntensity:.18,
+  trailLifetime:.95,trailWidth:.65,trailGlow:.25,
+  quality:{high:{segments:128,rings:96,dpr:1.5,bloom:true},medium:{segments:88,rings:64,dpr:1.25,bloom:true},low:{segments:56,rings:40,dpr:1,bloom:false}}
 } as const;
-export function chooseQuality(request: Quality, width: number, cores = 4): Exclude<Quality,'auto'> {
-  if(request !== 'auto')return request;
-  return cores < 4 ? 'low' : width < 760 ? 'medium' : 'high';
-}
-export function composition(width: number, height: number) {
-  const aspect=width/Math.max(1,height);
-  const viewHeight=7.5;
-  const scale=Math.min(visual.massScale, aspect*viewHeight/3.0);
-  const centerY=height<500 ? .72 : aspect<.8 ? .65 : visual.massPositionY;
-  return {viewHeight,scale,centerY,bubbleTop:aspect<.8 ? .68 : .755};
+export function chooseQuality(request:Quality,width:number,cores=4):Exclude<Quality,'auto'>{return request==='auto'?(cores<4?'low':width<760?'medium':'high'):request;}
+export function composition(width:number,height:number){
+  const viewHeight=visual.viewHeight,aspect=width/Math.max(1,height);
+  return{viewHeight,scale:Math.min(visual.massScale,aspect*viewHeight/2.8),centerY:visual.massPositionY,mobile:aspect<.85};
 }
