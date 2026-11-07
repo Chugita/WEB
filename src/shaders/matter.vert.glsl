@@ -31,6 +31,17 @@ q+=vec3(-.14,-.16,.07)*sag;
 float shoulder=exp(-dot(d-normalize(vec3(.9,.05,.4)),d-normalize(vec3(.9,.05,.4)))*9.);
 q+=vec3(.21,.04,.03)*shoulder;
 q.x+=.11*d.y*d.y-.08*d.z;q.y+=.045*sin(d.x*3.+t*.6)*(1.-d.y*d.y);
+q=mix(q,d*r, .28);
+// Six broad tips travel out of phase, producing waves without rigid rotation.
+float lobes=0.;
+for(int i=0;i<6;i++){
+ float phase=float(i)*1.04719755;
+ float angle=phase+.10*sin(uTime*.28+phase*1.7);
+ vec3 axis=normalize(vec3(cos(angle),sin(angle),.16*sin(phase*2.)));
+ float wave=.075+.07*sin(uTime*.58-phase*1.4);
+ lobes+=exp(-dot(d-axis,d-axis)*16.)*wave;
+}
+q+=d*lobes;
 return mix(q,d*(1.+fixedField*.04),uMorph);
 }
 void main(){

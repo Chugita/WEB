@@ -26,6 +26,14 @@ export function deform(x:number,y:number,z:number,time:number,contact:Contact,mo
 const upper=bump(.35,.85,.25,5),left=bump(-.9,.1,.2,6),lower=bump(.5,-.8,.1,7);
 out[0]=x*r*1.04+.13*upper-.12*left+.10*lower-.14*bump(-.5,-.8,.3,4)+.21*bump(.9,.05,.4,9)+.11*y*y-.08*z;
 out[1]=y*r*.98+.18*upper-.05*left-.14*lower-.16*bump(-.5,-.8,.3,4)+.04*bump(.9,.05,.4,9)+.045*Math.sin(x*3+t*.6)*(1-y*y);
-out[2]=z*r*.85-.08*upper+.12*left+.03*lower+.07*bump(-.5,-.8,.3,4)+.03*bump(.9,.05,.4,9);return out;
+out[2]=z*r*.85-.08*upper+.12*left+.03*lower+.07*bump(-.5,-.8,.3,4)+.03*bump(.9,.05,.4,9);let lobes=0;
+ for(let i=0;i<6;i++){
+  const phase=i*Math.PI/3,angle=phase+.10*Math.sin(time*motion*.28+phase*1.7);
+  lobes+=bump(Math.cos(angle),Math.sin(angle),.16*Math.sin(phase*2),16)*(.075+.07*Math.sin(time*motion*.58-phase*1.4));
+ }
+ out[0]=out[0]*.72+x*r*.28+x*lobes;
+ out[1]=out[1]*.72+y*r*.28+y*lobes;
+ out[2]=out[2]*.72+z*r*.28+z*lobes;
+ return out;
 }
 

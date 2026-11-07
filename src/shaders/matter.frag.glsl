@@ -7,6 +7,7 @@ void main(){
  vec3 N=normalize(vNormal),V=normalize(vView),p=vPosition;
  float facing=max(dot(N,V),0.),rim=pow(1.-facing,2.8);
  vec3 color=vec3(0.);float opacity=0.;
+ vec3 nucleus=vec3(-.08+sin(uTime*.32)*.18,.02+sin(uTime*.25+.4)*.14,.04+cos(uTime*.21)*.10);
  // Front-to-back integration: density, absorption, folded tissue and embedded source.
  // The enclosing mesh remains a single closed body.
  for(int i=0;i<40;i++){
@@ -21,7 +22,7 @@ void main(){
   float alpha=1.-exp(-density*.13);
   vec3 tint=mix(uMauve,uLavender,.35+smoothstep(-.5,.6,f)*.6);
   tint=mix(tint,uIce,smoothstep(.1,.9,-q.x+q.y*.2)*.35);
-  float coreDistance=length((q-vec3(-.10,.02,.04))*vec3(1.,1.12,1.));
+  float coreDistance=length((q-nucleus)*vec3(1.,1.12,1.));
   float pulse=1.+sin(uTime*.72)*.045+uPressure*.8;
   float source=exp(-coreDistance*coreDistance*9.)*pulse;
   tint=mix(tint,uChampagne,source*.8);
