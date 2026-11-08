@@ -4,7 +4,7 @@ varying vec3 vPosition,vNormal,vView;
 void main(){
  float radius=length(gl_PointCoord-.5);if(radius>.5)discard;
  float facing=max(0.,dot(normalize(vNormal),normalize(vView)));
- vec3 nucleus=vec3(-.08+sin(uTime*.32)*.18,.02+sin(uTime*.25+.4)*.14,.04+cos(uTime*.21)*.10);
+ vec3 nucleus=vec3(0.);
  float warmth=exp(-dot(vPosition-nucleus,vPosition-nucleus)*2.2);
  vec3 tint=mix(uLavender,uIce,smoothstep(.2,.9,-vPosition.x)*.4);
  tint=mix(tint,uChampagne,warmth);

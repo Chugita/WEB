@@ -2,7 +2,7 @@ uniform float uTime,uMorph,uPressure,uReleaseAge;
 uniform vec3 uContact;
 uniform vec4 uImpulses[3];
 uniform float uImpulseAges[3];
-varying vec3 vPosition,vWorld,vNormal,vView;
+varying vec3 vPosition,vWorld,vNormal,vView,vLocalView;
 varying float vDensity;
 float cell(vec3 p){return fract(sin(dot(p,vec3(19.19,71.17,113.13)))*17453.671)*2.-1.;}
 float fieldNoise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(cell(i),cell(i+vec3(1,0,0)),f.x),mix(cell(i+vec3(0,1,0)),cell(i+vec3(1,1,0)),f.x),f.y),mix(mix(cell(i+vec3(0,0,1)),cell(i+vec3(1,0,1)),f.x),mix(cell(i+vec3(0,1,1)),cell(i+vec3(1,1,1)),f.x),f.y),f.z);}
@@ -34,6 +34,8 @@ void main(){
   vec3 n=normalize(cross(pa-p,pb-p));if(dot(n,d)<0.)n=-n;
   vec4 world=modelMatrix*vec4(p,1.);
   vPosition=p;vWorld=world.xyz;vNormal=normalize(mat3(modelMatrix)*n);vView=cameraPosition-world.xyz;
+  vec3 viewAxis=vec3(viewMatrix[0][2],viewMatrix[1][2],viewMatrix[2][2]);
+  vLocalView=vec3(dot(modelMatrix[0].xyz,viewAxis),dot(modelMatrix[1].xyz,viewAxis),dot(modelMatrix[2].xyz,viewAxis));
   vDensity=fieldNoise(d*2.2+vec3(.6,uTime*.015,2.1))*.5+.5;
   gl_Position=projectionMatrix*viewMatrix*world;
 }
