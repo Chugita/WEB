@@ -18,6 +18,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
   const abort=new AbortController(),events={signal:abort.signal},diagnostics=import.meta.env.DEV;
   let disposed=false,lost=false,paused=false,frame=0,last=0,time=0,wall=0,pressure=0,velocity=0,target=0,onMass=false,pointerDown=false,pickTimer=0,average=1/60,started=false;
   let selected=-1,selectedAt=0,hadSelection=false;
+  let dragX=0,dragY=0,lastDragX=0,lastDragY=0;
   let captureElement:HTMLElement|null=null,capturedId=-1;
   const selectionFrom=new THREE.Vector3(),selectedPosition=new THREE.Vector3(),junctionPosition=new THREE.Vector3(0,-4.5,0);
   let rig:{matter:LivingMatter;network:OrganicNetwork}|null=null;
@@ -77,6 +78,10 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     target=reduced()||paused?0:onMass?(pointerDown?visual.dragInfluence:visual.hoverInfluence):0;
   }
   window.addEventListener('pointermove',event=>{
+    if(pointerDown&&event.pointerId===capturedId){
+      dragY+=(event.clientX-lastDragX)*.0075;dragX+=(event.clientY-lastDragY)*.0075;
+      lastDragX=event.clientX;lastDragY=event.clientY;
+    }
     hit(event);
     if(!reduced()&&!paused&&(event.pointerType!=='touch'||pointerDown)){
       trail.setIntensity(pointerDown?1:onMass||ui.hover>=0?.55:0);
@@ -90,19 +95,19 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
   },events);
   const down=(event:PointerEvent)=>{
     if(event.button!==0||(event.target as Element).closest('button'))return;
-    hit(event);if(!onMass||reduced()||paused)return;
-    pointerDown=true;contact.copy(desired);target=visual.dragInfluence;
+    hit(event);if(!onMass||paused||ui.progress>.12)return;
+    pointerDown=true;lastDragX=event.clientX;lastDragY=event.clientY;zone.style.cursor='grabbing';contact.copy(desired);target=reduced()?0:visual.dragInfluence;
     const element=event.target instanceof HTMLElement?event.target:renderer.domElement;
     element.setPointerCapture(event.pointerId);captureElement=element;capturedId=event.pointerId;event.preventDefault();
   };
   window.addEventListener('pointerdown',down,{...events,passive:false});
   const release=()=>{
     if(pointerDown)matter.release(contact,pressure);
-    pointerDown=false;target=0;
+    pointerDown=false;zone.style.cursor='grab';target=0;
     if(captureElement?.hasPointerCapture(capturedId))captureElement.releasePointerCapture(capturedId);
     captureElement=null;capturedId=-1;
   };
-  window.addEventListener('pointerup',release,events);window.addEventListener('pointercancel',release,events);window.addEventListener('blur',()=>{release();trail.clear();},events);
+  window.addEventListener('lostpointercapture',release,events);window.addEventListener('pointerup',release,events);window.addEventListener('pointercancel',release,events);window.addEventListener('blur',()=>{release();trail.clear();},events);
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();lost=true;root.classList.remove('webgl-ready');renderer.domElement.style.visibility='hidden';root.classList.add('fallback-mode');},events);
   renderer.domElement.addEventListener('webglcontextrestored',()=>{lost=false;renderer.domElement.style.visibility='';root.classList.remove('fallback-mode');last=0;},events);
   toggle.addEventListener('click',()=>{paused=!paused;target=0;trail.clear();toggle.textContent=paused?'Activar movimiento':'Pausar movimiento';},events);
@@ -125,7 +130,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     const field:Contact={x:contact.x,y:contact.y,z:contact.z,strength:moving?pressure:0,age:10};
     matter.update(time,field,pose.morph,moving?dt:0,pickTimer>.1);if(pickTimer>.1)pickTimer=0;
     matter.group.scale.setScalar(pose.scale);matter.group.position.set(pose.x,pose.y+(1-pose.morph)*Math.sin(time*.42)*.045,0);
-    matter.group.rotation.set(Math.sin(time*.09)*.022*(1-pose.morph),Math.sin(time*.07)*.028*(1-pose.morph),0);
+    matter.group.rotation.set((dragX+Math.sin(time*.09)*.022)*(1-pose.morph),(dragY+Math.sin(time*.07)*.028)*(1-pose.morph),0);
     let selectionProgress=0;
     if(selected>=0){
       const t=reduced()?1:clamp((wall-selectedAt)/1.8);
@@ -142,7 +147,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     if((options.quality??'auto')==='auto'&&wall>6&&average>.03&&renderer.getPixelRatio()>1){renderer.setPixelRatio(Math.max(1,renderer.getPixelRatio()-.2));composer.setPixelRatio(renderer.getPixelRatio());bloom.enabled=false;average=1/60;}
     if(!lost){composer.render(dt);root.classList.add('webgl-ready');}
     if(diagnostics&&Math.floor(wall*4)!==Math.floor((wall-dt)*4)){
-      root.dataset.renderer='webgl';root.dataset.progress=ui.progress.toFixed(3);root.dataset.morph=pose.morph.toFixed(3);root.dataset.pressure=pressure.toFixed(4);root.dataset.motionTime=time.toFixed(3);root.dataset.trailPoints=String(trail.pointCount);root.dataset.trailEmitted=String(trail.emitted);root.dataset.stage=pose.junction>.98?'junction':pose.descent>.01?'descent':pose.morph>.01?'metamorphosis':'origin';
+      root.dataset.dragRotation=`${dragX.toFixed(3)},${dragY.toFixed(3)}`;root.dataset.dragging=String(pointerDown);root.dataset.renderer='webgl';root.dataset.progress=ui.progress.toFixed(3);root.dataset.morph=pose.morph.toFixed(3);root.dataset.pressure=pressure.toFixed(4);root.dataset.motionTime=time.toFixed(3);root.dataset.trailPoints=String(trail.pointCount);root.dataset.trailEmitted=String(trail.emitted);root.dataset.stage=pose.junction>.98?'junction':pose.descent>.01?'descent':pose.morph>.01?'metamorphosis':'origin';
     }
     frame=requestAnimationFrame(tick);
   }
