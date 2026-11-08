@@ -5,6 +5,7 @@ import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {LivingMatter} from './LivingMatter';
 import {AtmosphericDepth} from './AtmosphericDepth';
+import {SheddingMatter} from './SheddingMatter';
 import {OrganicNetwork} from './OrganicNetwork';
 import {ElectromagneticTrail} from './ElectromagneticTrail';
 import {JourneyInterface} from './JourneyInterface';
@@ -52,6 +53,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
   const matter=new LivingMatter(preset.segments,preset.rings),network=new OrganicNetwork();rig={matter,network};scene.add(matter.group,network.group);
   const trail=new ElectromagneticTrail();scene.add(trail.group);
   const atmosphere=new AtmosphericDepth();scene.add(atmosphere.mesh);
+  const shedding=new SheddingMatter();scene.add(shedding.mesh);
   const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
   const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),visual.bloomIntensity,.3,1.05);bloom.enabled=preset.bloom;composer.addPass(bloom);
   const output=new OutputPass();composer.addPass(output);
@@ -140,6 +142,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
       else{selectionProgress=smooth(hadSelection?(t-.3)/.7:t);network.selectionPosition(selectionProgress,selectedPosition);}
       matter.group.position.lerp(selectedPosition,pose.junction*pose.junction);
     }
+    shedding.update(pose.morph,layout.scale,layout.centerY);
     atmosphere.update(matter.group.position,pose.scale,time,dt,pointer,dragX,dragY,moving);
     camera.position.y=pose.cameraY;camera.updateMatrixWorld();
     network.update(pose.descent,pose.junction,time,ui.hover,selected,selectionProgress,reduced());trail.update(wall,!moving);
@@ -155,7 +158,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     frame=requestAnimationFrame(tick);
   }
   frame=requestAnimationFrame(tick);
-  return{quality,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);abort.abort();observer.disconnect();ui.dispose();matter.dispose();network.dispose();trail.dispose();atmosphere.dispose();bloom.dispose();output.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();root.classList.remove('webgl-ready');}};
+  return{quality,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);abort.abort();observer.disconnect();ui.dispose();matter.dispose();network.dispose();trail.dispose();atmosphere.dispose();shedding.dispose();bloom.dispose();output.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();root.classList.remove('webgl-ready');}};
 }
 
 

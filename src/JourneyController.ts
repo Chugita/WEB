@@ -7,7 +7,7 @@ export const answers=[
 export type AnswerId=typeof answers[number]['id'];
 export const question='Si pensaras en los próximos años, ¿qué te gustaría conseguir?';
 export function journeyPose(progress:number,massScale:number,centerY=.2){
-  const p=clamp(progress),concentration=smooth(p/.25),morph=smooth((p-.18)/.3),descent=smooth((p-.45)/.37);
+  const p=clamp(progress),concentration=smooth(p/.25),morph=smooth((p-.04)/.44),descent=smooth((p-.45)/.37);
   const u=descent,v=1-u;
   return{progress:p,concentration,morph,descent,
     scale:massScale*(1-morph)+.115*morph,
@@ -22,3 +22,4 @@ export function branchPoints(mobile:boolean){
   return mobile?[{x:-1.05,y:-5.95},{x:0,y:-7.05},{x:1.05,y:-5.95}]:[{x:-2.35,y:-6.15},{x:0,y:-6.65},{x:2.35,y:-6.15}];
 }
 export function normalizedScroll(scroll:number,documentHeight:number,viewportHeight:number){return clamp(scroll/Math.max(1,documentHeight-viewportHeight));}
+
