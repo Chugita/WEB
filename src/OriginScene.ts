@@ -71,9 +71,10 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     onMass=Boolean(intersection);
     if(intersection){
       desired.copy(matter.surface.worldToLocal(intersection.point.clone())).normalize();
+      if(!reduced()&&!paused)trail.setSurfaceContact(intersection.point,wall);
       if(diagnostics)root.dataset.surfaceContacts=String(Number(root.dataset.surfaceContacts??0)+1);
     }
-    target=reduced()||paused?0:onMass?(pointerDown?visual.dragInfluence:visual.hoverInfluence):0;
+    target=reduced()||paused?0:onMass?(pointerDown?visual.dragInfluence:-visual.hoverInfluence):0;
   }
   window.addEventListener('pointermove',event=>{
     hit(event);
@@ -82,6 +83,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
       if(raycaster.ray.intersectPlane(trailPlane,trailPoint)){
         if(onMass)trailPoint.lerp(matter.group.position,.025);
         trail.add(trailPoint,wall);
+        if(!onMass&&trail.isAttached)target=-Math.min(.13,trail.stretch*.12);
         if(diagnostics&&!pointerDown)root.dataset.freeTrailSamples=String(Number(root.dataset.freeTrailSamples??0)+1);
       }
     }
@@ -117,6 +119,7 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     if(ui.progress<.01)started=false;
     if(Math.abs(ui.progress-lastProgress)>.007)trail.clear();lastProgress=ui.progress;
     if(ui.progress<.81&&selected>=0){selected=-1;network.setSelection(-1);ui.resetSelection();}
+    if(!onMass&&!trail.isAttached)target=0;
     const response=spring(pressure,velocity,target,dt);pressure=response.value;velocity=response.velocity;contact.lerp(desired,1-Math.exp(-dt*12));
     pickTimer+=dt;
     const field:Contact={x:contact.x,y:contact.y,z:contact.z,strength:moving?pressure:0,age:10};
@@ -139,11 +142,13 @@ export function mountOriginScene(root:HTMLElement,options:OriginSceneProps={}){
     if((options.quality??'auto')==='auto'&&wall>6&&average>.03&&renderer.getPixelRatio()>1){renderer.setPixelRatio(Math.max(1,renderer.getPixelRatio()-.2));composer.setPixelRatio(renderer.getPixelRatio());bloom.enabled=false;average=1/60;}
     if(!lost){composer.render(dt);root.classList.add('webgl-ready');}
     if(diagnostics&&Math.floor(wall*4)!==Math.floor((wall-dt)*4)){
-      root.dataset.renderer='webgl';root.dataset.progress=ui.progress.toFixed(3);root.dataset.morph=pose.morph.toFixed(3);root.dataset.pressure=pressure.toFixed(4);root.dataset.motionTime=time.toFixed(3);root.dataset.trailPoints=String(trail.pointCount);root.dataset.trailEmitted=String(trail.emitted);root.dataset.stage=pose.junction>.98?'junction':pose.descent>.01?'descent':pose.morph>.01?'metamorphosis':'origin';
+      root.dataset.renderer='webgl';root.dataset.progress=ui.progress.toFixed(3);root.dataset.morph=pose.morph.toFixed(3);root.dataset.pressure=pressure.toFixed(4);root.dataset.motionTime=time.toFixed(3);root.dataset.bridgeStretch=trail.stretch.toFixed(3);root.dataset.bridgeCuts=String(trail.cuts);root.dataset.bridge=String(trail.isAttached);root.dataset.fragments=String(trail.activeFragments);root.dataset.trailPoints=String(trail.pointCount);root.dataset.trailEmitted=String(trail.emitted);root.dataset.stage=pose.junction>.98?'junction':pose.descent>.01?'descent':pose.morph>.01?'metamorphosis':'origin';
     }
     frame=requestAnimationFrame(tick);
   }
   frame=requestAnimationFrame(tick);
   return{quality,dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);abort.abort();observer.disconnect();ui.dispose();matter.dispose();network.dispose();trail.dispose();bloom.dispose();output.dispose();composer.dispose();renderer.dispose();renderer.domElement.remove();root.classList.remove('webgl-ready');}};
 }
+
+
 
