@@ -43,13 +43,13 @@ export class OrganicNetwork{
       const f=filament(curve,.010);this.group.add(f.mesh);this.branches.push(f);
       for(let j=0;j<4;j++){
         const t=.22+j*.13,origin=curve.getPoint(t),side=(j+i)%2?1:-1;
-        const spread=(mobile?.30:.52)*(1+j*.08)*side;
+        const spread=(mobile?.38:.72)*(1+j*.08)*side;
         const end=origin.clone().add(point(spread,-.2-j*.045,(j%2?1:-1)*.12));
         const root=new THREE.CubicBezierCurve3(origin,origin.clone().add(point(spread*.24,-.12,.08)),end.clone().add(point(-spread*.3,.12,-.04)),end);
-        const child=filament(root,.0045);this.group.add(child.mesh);this.twigs.push({f:child,start:.32+j*.12,parent:i});
+        const child=filament(root,.006);this.group.add(child.mesh);this.twigs.push({f:child,start:.32+j*.12,parent:i});
         for(let k=0;k<2;k++){
           const a=root.getPoint(.48+k*.26),b=a.clone().add(point(spread*(k?-.32:.38),-.16-k*.05,.07));
-          const twig=filament(new THREE.CubicBezierCurve3(a,a.clone().add(point(0,-.06,.06)),b.clone().add(point(-spread*.1,.07,0)),b),.0025);
+          const twig=filament(new THREE.CubicBezierCurve3(a,a.clone().add(point(0,-.06,.06)),b.clone().add(point(-spread*.1,.07,0)),b),.0035);
           this.group.add(twig.mesh);this.twigs.push({f:twig,start:.49+j*.10+k*.07,parent:i});
         }
       }
@@ -60,6 +60,18 @@ export class OrganicNetwork{
       const a=this.branches[i].curve.getPoint(.30),b=this.branches[i+1].curve.getPoint(.42);
       const web=filament(new THREE.CubicBezierCurve3(a,a.clone().add(point(.22,-.24,-.12)),b.clone().add(point(-.18,.17,-.12)),b),.0025);
       this.group.add(web.mesh);this.twigs.push({f:web,start:.66,parent:i});
+    }
+    const extent=mobile?1.6:3.9;
+    for(let i=0;i<6;i++){
+      const side=i<3?-1:1,j=i%3;
+      const a=point(0,-4.5,-.2),end=point(side*extent,-4.4-j*1.2,-.3);
+      const root=new THREE.CubicBezierCurve3(a,point(side*.4,-4.1-j*.3,-.15),point(side*extent*.6,end.y+.5,-.45),end);
+      const f=filament(root,.0038);this.group.add(f.mesh);this.twigs.push({f,start:.22+j*.12,parent:-1});
+      for(let k=0;k<3;k++){
+        const o=root.getPoint(.36+k*.19),e=o.clone().add(point(side*(mobile?.20:.48),-.28-k*.08,.08));
+        const fine=filament(new THREE.CubicBezierCurve3(o,o.clone().add(point(side*.1,-.15,-.08)),e.clone().add(point(-side*.12,.1,0)),e),.0027);
+        this.group.add(fine.mesh);this.twigs.push({f:fine,start:.44+j*.10+k*.06,parent:-1});
+      }
     }
     if(this.selected>=0)this.setSelection(this.selected);
   }
@@ -89,9 +101,9 @@ export class OrganicNetwork{
     });
     this.twigs.forEach(({f,start,parent})=>{
       grow(f,Math.max(0,(junction-start)/(1-start)));
-      const active=selected===parent||hover===parent;
+      const active=parent>=0&&(selected===parent||hover===parent);
       f.material.color.set(active?palette.champagne:palette.lilac);
-      f.material.opacity=junction*(active?.32:selected<0?.19:.055);
+      f.material.opacity=junction*(active?.40:selected<0?.26:.055);
     });
     this.pulse.visible=hover>=0&&junction>.9&&!reduced;
     if(this.pulse.visible){this.branches[hover].curve.getPoint((time*.65)%1,this.temp);this.pulse.position.copy(this.temp);}

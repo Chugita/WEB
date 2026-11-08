@@ -43,7 +43,7 @@ void main(){
  float cool=pow(max(dot(N,normalize(V+C)),0.),52.);
  color+=uChampagne*spec*.20+uIce*cool*.16;
  color+=mix(uIce,uChampagne,smoothstep(-.6,.9,p.x+p.y))*rim*(.08+vDensity*.11);
- color=mix(color,uCore*(1.2+facing*.9),uMorph);
+ color=mix(color,uCore*(1.2+facing*.9),smoothstep(.86,1.,uMorph));
  gl_FragColor=vec4(color,1.);
  #include <tonemapping_fragment>
  #include <colorspace_fragment>
